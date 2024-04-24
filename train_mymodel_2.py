@@ -5,16 +5,17 @@ import numpy as np
 import torch
 from tqdm import trange
 
-points=meshio.read("data/bunny_coarse_train_0.ply").points
+points=meshio.read("data/Stanford_Bunny_red.stl").points
 points[:,2]=points[:,2]-np.min(points[:,2])+0.0000001
 points[:,0]=points[:,0]-np.min(points[:,0])+0.2
 points[:,1]=points[:,1]-np.min(points[:,1])+0.2
 points=0.9*points/np.max(points)
-
 all_points=np.zeros((600,len(points),3))
 for i in range(600):
     all_points[i]=meshio.read("data/bunny_coarse_train_"+str(i)+".ply").points
 
+np.save("all_points_train.npy",all_points)
+assert False
 x=torch.tensor(all_points,dtype=torch.float32)
 y=x.clone()
 
@@ -52,7 +53,6 @@ class Decoder(nn.Module):
         x=self.model(x)
         x=x.reshape(BATCH_SIZE,-1,3)
         return x
-    
 
 class AutoEncoder(nn.Module):
     def __init__(self,latent_dim):
